@@ -1,13 +1,13 @@
-const ServiceRequestStatusModel = require("../models/ServiceRequestStatus.model");
+const ServiceDeptModel = require("../models/ServiceDept.model");
 
 async function getAll() {
   try {
-    const data = await ServiceRequestStatusModel.find();
+    const data = await ServiceDeptModel.find();
 
     return {
       error: false,
       data,
-      message: "Get all status",
+      message: "Get all department",
     };
   } catch (error) {
     return {
@@ -19,12 +19,12 @@ async function getAll() {
 
 async function getByID(id) {
   try {
-    const data = await ServiceRequestStatusModel.findById(id);
+    const data = await ServiceDeptModel.findById(id);
 
     return {
       error: false,
       data,
-      message: "Get status by id",
+      message: "Get department by id",
     };
   } catch (error) {
     return {
@@ -36,12 +36,12 @@ async function getByID(id) {
 
 async function insert(formData) {
   try {
-    const data = await ServiceRequestStatusModel.create(formData);
+    const data = await ServiceDeptModel.create(formData);
 
     return {
       error: false,
       data,
-      message: "insert new status",
+      message: "insert new department",
     };
   } catch (error) {
     return {
@@ -53,7 +53,7 @@ async function insert(formData) {
 
 async function upadte(id, formData) {
   try {
-    const data = await ServiceRequestStatusModel.findByIdAndUpdate(
+    const data = await ServiceDeptModel.findByIdAndUpdate(
       id,
       formData,
     );
@@ -61,7 +61,7 @@ async function upadte(id, formData) {
     return {
       error: false,
       data,
-      message: "insert new status",
+      message: "update department",
     };
   } catch (error) {
     return {
@@ -73,12 +73,12 @@ async function upadte(id, formData) {
 
 async function deleteById(id) {
   try {
-    const data = await ServiceRequestStatusModel.findByIdAndDelete(id);
+    const data = await ServiceDeptModel.findByIdAndDelete(id);
 
     return {
       error: false,
       data,
-      message: "insert new status",
+      message: "delete department",
     };
   } catch (error) {
     return {
@@ -93,5 +93,5 @@ module.exports = {
   getByID,
   insert,
   upadte,
-  deleteById,
+  deleteById
 };

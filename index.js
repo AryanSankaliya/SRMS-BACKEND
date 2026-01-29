@@ -2,6 +2,12 @@ require("dotenv").config();
 const express = require("express");
 const connectDB = require("./db/mongo");
 const routerServiceRequestStatus = require("./routes/ServiceRequestStatus.route");
+const routerServiceDeptPerson = require("./routes/ServiceDeptPerson.route");
+const routerServiceRequest = require("./routes/ServiceRequest.route");
+const routerServiceRequestReply = require("./routes/ServiceRequestReply.route");
+const routerServiceRequestType = require("./routes/ServiceRequestType.route");
+const routerServiceRequestTypeWisePerson = require("./routes/ServiceRequestTypeWisePerson.route");
+const routerServiceType = require("./routes/ServiceType.route");
 
 const app = express();
 app.use(express.json());
@@ -9,6 +15,12 @@ app.use(express.json());
 connectDB();
 
 app.use("/status", routerServiceRequestStatus);
+app.use("/deptPerson", routerServiceDeptPerson);
+app.use("/request", routerServiceRequest);
+app.use("/reply", routerServiceRequestReply);
+app.use("/requestType", routerServiceRequestType);
+app.use("/typeWisePerson", routerServiceRequestTypeWisePerson);
+app.use("/type", routerServiceType);
 
 
 app.listen(process.env.PORT, () => {
