@@ -8,6 +8,7 @@ const routerServiceRequestReply = require("./routes/ServiceRequestReply.route");
 const routerServiceRequestType = require("./routes/ServiceRequestType.route");
 const routerServiceRequestTypeWisePerson = require("./routes/ServiceRequestTypeWisePerson.route");
 const routerServiceType = require("./routes/ServiceType.route");
+const roterServiceDept = require("./routes/ServiceDept.route");
 
 const app = express();
 app.use(express.json());
@@ -21,6 +22,7 @@ app.use("/reply", routerServiceRequestReply);
 app.use("/requestType", routerServiceRequestType);
 app.use("/typeWisePerson", routerServiceRequestTypeWisePerson);
 app.use("/type", routerServiceType);
+app.use("/dept" , roterServiceDept)
 
 
 app.listen(process.env.PORT, () => {

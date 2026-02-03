@@ -1,17 +1,19 @@
 const express = require("express");
 const router = express.Router();
-// Service exports: getRepliesByRequestId, addReply, update, deleteById
+// Service exports: getAll, getById, insert, update, deleteById, login
 const {
-    getRepliesByRequestId,
-    addReply,
+    getAll,
+    getById,
+    insert,
     update,
     deleteById,
-} = require("../services/ServiceRequestReply.services");
+    login
+} = require("../services/staff.service");
 
-// 1. GET REPLIES BY REQUEST ID
-router.get("/:requestId", async (req, res) => {
+// 1. GET ALL
+router.get("/", async (req, res) => {
     try {
-        const result = await getRepliesByRequestId(req.params.requestId);
+        const result = await getAll();
         if (result.error) {
             return res.status(500).json(result);
         }
@@ -21,10 +23,23 @@ router.get("/:requestId", async (req, res) => {
     }
 });
 
-// 2. ADD REPLY (POST)
+// 2. GET BY ID
+router.get("/:id", async (req, res) => {
+    try {
+        const result = await getById(req.params.id);
+        if (result.error) {
+            return res.status(500).json(result);
+        }
+        return res.status(200).json(result);
+    } catch (error) {
+        return res.status(500).json({ error: true, message: error.message });
+    }
+});
+
+// 3. INSERT (Register)
 router.post("/", async (req, res) => {
     try {
-        const result = await addReply(req.body);
+        const result = await insert(req.body);
         if (result.error) {
             return res.status(500).json(result);
         }
@@ -34,7 +49,7 @@ router.post("/", async (req, res) => {
     }
 });
 
-// 3. UPDATE REPLY (PUT)
+// 4. UPDATE
 router.put("/:id", async (req, res) => {
     try {
         const result = await update(req.params.id, req.body);
@@ -47,11 +62,29 @@ router.put("/:id", async (req, res) => {
     }
 });
 
-// 4. DELETE REPLY
+// 5. DELETE
 router.delete("/:id", async (req, res) => {
     try {
         const result = await deleteById(req.params.id);
         if (result.error) {
+            return res.status(500).json(result);
+        }
+        return res.status(200).json(result);
+    } catch (error) {
+        return res.status(500).json({ error: true, message: error.message });
+    }
+});
+
+// 6. LOGIN
+router.post("/login", async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        if (!email || !password) {
+            return res.status(400).json({ error: true, message: "Email and Password are required" });
+        }
+        const result = await login(email, password);
+        if (result.error) {
+            // Can be 401, but keeping 500/custom logic simple as per instructions or consistent with other routes
             return res.status(500).json(result);
         }
         return res.status(200).json(result);

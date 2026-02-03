@@ -2,7 +2,9 @@ const ServiceRequestStatusModel = require("../models/ServiceRequestStatus.model"
 
 async function getAll() {
   try {
-    const data = await ServiceRequestStatusModel.find();
+    // CHANGE 1: Sorting lagayi hai (Sequence wise)
+    // Taaki Dropdown me order sahi dikhe: Pending -> In Progress -> Closed
+    const data = await ServiceRequestStatusModel.find().sort({ sequence: 1 });
 
     return {
       error: false,
@@ -20,7 +22,6 @@ async function getAll() {
 async function getByID(id) {
   try {
     const data = await ServiceRequestStatusModel.findById(id);
-
     return {
       error: false,
       data,
@@ -36,12 +37,22 @@ async function getByID(id) {
 
 async function insert(formData) {
   try {
+    // CHANGE 2: Duplicate Validation (System Name Unique hona chahiye)
+    // Agar 'PENDING' pehle se hai, toh dusra mat banne do
+    const existingStatus = await ServiceRequestStatusModel.findOne({
+        serviceRequestStatusSystemName: formData.serviceRequestStatusSystemName.toUpperCase()
+    });
+    
+    if (existingStatus) {
+        throw new Error("Status with this System Name already exists!");
+    }
+
     const data = await ServiceRequestStatusModel.create(formData);
 
     return {
       error: false,
       data,
-      message: "insert new status",
+      message: "Insert new status",
     };
   } catch (error) {
     return {
@@ -51,17 +62,29 @@ async function insert(formData) {
   }
 }
 
-async function upadte(id, formData) {
+// CHANGE 3: Spelling Fix (upadte -> update)
+async function update(id, formData) {
   try {
+    // Update me bhi Duplicate check (Optional but recommended)
+    if (formData.serviceRequestStatusSystemName) {
+         const existingStatus = await ServiceRequestStatusModel.findOne({
+            serviceRequestStatusSystemName: formData.serviceRequestStatusSystemName.toUpperCase(),
+            _id: { $ne: id }
+        });
+        if (existingStatus) throw new Error("Status System Name already taken!");
+    }
+
+    // { new: true } lagaya taaki updated data wapas mile
     const data = await ServiceRequestStatusModel.findByIdAndUpdate(
       id,
       formData,
+      { new: true }
     );
 
     return {
       error: false,
       data,
-      message: "insert new status",
+      message: "Update status",
     };
   } catch (error) {
     return {
@@ -73,12 +96,13 @@ async function upadte(id, formData) {
 
 async function deleteById(id) {
   try {
+    
     const data = await ServiceRequestStatusModel.findByIdAndDelete(id);
 
     return {
       error: false,
       data,
-      message: "insert new status",
+      message: "Delete status",
     };
   } catch (error) {
     return {
@@ -92,6 +116,6 @@ module.exports = {
   getAll,
   getByID,
   insert,
-  upadte,
+  update, // Export name fixed
   deleteById,
 };

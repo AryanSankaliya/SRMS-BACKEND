@@ -2,7 +2,7 @@ const ServiceDeptModel = require("../models/ServiceDept.model");
 
 async function getAll() {
   try {
-    const data = await ServiceDeptModel.find();
+    const data = await ServiceDeptModel.find().sort({ serviceDeptName: 1 });
 
     return {
       error: false,
@@ -36,6 +36,18 @@ async function getByID(id) {
 
 async function insert(formData) {
   try {
+    const existingDept = await ServiceDeptModel.findOne({
+      serviceDeptName: {
+        $regex: new RegExp(`^ ${formData.serviceDeptName} $`, "i"),
+      },
+    });
+
+    if (existingDept) {
+      throw new Error(
+        `Department '${formData.serviceDeptName}' already exists!`,
+      );
+    }
+
     const data = await ServiceDeptModel.create(formData);
 
     return {
@@ -51,12 +63,24 @@ async function insert(formData) {
   }
 }
 
-async function upadte(id, formData) {
+async function update(id, formData) {
   try {
-    const data = await ServiceDeptModel.findByIdAndUpdate(
-      id,
-      formData,
-    );
+    if (formData.serviceDeptName) {
+      const existingDept = await ServiceDeptModel.findOne({
+        serviceDeptName: {
+          $regex: new RegExp("^" + formData.serviceDeptName + "$", "i"),
+        },
+        _id: { $ne: id },
+      });
+
+      if (existingDept) {
+        throw new Error(
+          `Department name '${formData.serviceDeptName}' is already taken by another ID.`,
+        );
+      }
+    }
+
+    const data = await ServiceDeptModel.findByIdAndUpdate(id, formData,{new:true});
 
     return {
       error: false,
@@ -92,6 +116,6 @@ module.exports = {
   getAll,
   getByID,
   insert,
-  upadte,
-  deleteById
+  update,
+  deleteById,
 };

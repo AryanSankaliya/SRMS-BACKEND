@@ -1,31 +1,78 @@
-const express = require('express');
-const { getById } = require('../services/ServiceDeptPerson.services');
-const { insert, upadte, deleteById } = require('../services/ServiceDept.services');
+const express = require("express");
+const router = express.Router();
+// Service exports: getAll, getByID, insert, update, deleteById
+const {
+  getAll,
+  getByID,
+  insert,
+  update,
+  deleteById,
+} = require("../services/ServiceDept.services");
 
-const roterServiceDept = express.Router();
-
-roterServiceDept.get("/", async (req, res) => {
-  const data = await getAll();
-  res.send(data);
+// 1. GET ALL
+router.get("/", async (req, res) => {
+  try {
+    const result = await getAll();
+    if (result.error) {
+      return res.status(500).json(result);
+    }
+    return res.status(200).json(result);
+  } catch (error) {
+    return res.status(500).json({ error: true, message: error.message });
+  }
 });
 
-roterServiceDept.get("/:id", async (req, res) => {
-  const data = await getById();
-  res.send(data);
+// 2. GET BY ID
+router.get("/:id", async (req, res) => {
+  try {
+    const result = await getByID(req.params.id);
+    if (result.error) {
+      return res.status(500).json(result);
+    }
+    return res.status(200).json(result);
+  } catch (error) {
+    return res.status(500).json({ error: true, message: error.message });
+  }
 });
 
-roterServiceDept.post("/", async (req, res) => {
-  const data = await insert();
-  res.send(data);
+// 3. INSERT
+router.post("/", async (req, res) => {
+  try {
+    const result = await insert(req.body);
+    if (result.error) {
+      return res.status(500).json(result);
+    }
+    return res.status(201).json(result);
+  } catch (error) {
+    return res.status(500).json({ error: true, message: error.message });
+  }
 });
 
-roterServiceDept.put("/:id", async (req, res) => {
-  const data = await upadte();
-  res.send(data);
+// 4. UPDATE
+// Pass id and body
+router.put("/:id", async (req, res) => {
+  try {
+    const result = await update(req.params.id, req.body);
+    if (result.error) {
+      return res.status(500).json(result);
+    }
+    return res.status(200).json(result);
+  } catch (error) {
+    return res.status(500).json({ error: true, message: error.message });
+  }
 });
 
-roterServiceDept.get("/:id", async (req, res) => {
-  const data = await deleteById();
-  res.send(data);
+// 5. DELETE
+router.delete("/:id", async (req, res) => {
+  try {
+    const result = await deleteById(req.params.id);
+    if (result.error) {
+      return res.status(500).json(result);
+    }
+    return res.status(200).json(result);
+  } catch (error) {
+    return res.status(500).json({ error: true, message: error.message });
+  }
 });
 
+module.exports = router;

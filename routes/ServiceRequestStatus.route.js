@@ -1,35 +1,77 @@
 const express = require("express");
-const { getAllStatus, getStatusByID, insertStatus, upadteStatus } = require("../services/ServiceRequestStatus.services");
+const router = express.Router();
+// NOTE: Importing getByID (capital ID) as exported by the service
+const {
+  getAll,
+  getByID,
+  insert,
+  update,
+  deleteById,
+} = require("../services/ServiceRequestStatus.services");
 
-const routerServiceRequestStatus = express.Router();
-
-// Get All Status
-routerServiceRequestStatus.get("/", async (req, res) => {
-  const data = await getAllStatus();
-  res.send(data);
+// 1. GET ALL
+router.get("/", async (req, res) => {
+  try {
+    const result = await getAll();
+    if (result.error) {
+      return res.status(500).json(result);
+    }
+    return res.status(200).json(result);
+  } catch (error) {
+    return res.status(500).json({ error: true, message: error.message });
+  }
 });
 
-// Get Status by id
-routerServiceRequestStatus.get("/:id" , async (req, res)=>{
-  const data = await getStatusByID(req.params.id)
-  res.send(data)
-})
+// 2. GET BY ID
+router.get("/:id", async (req, res) => {
+  try {
+    const result = await getByID(req.params.id);
+    if (result.error) {
+      return res.status(500).json(result);
+    }
+    return res.status(200).json(result);
+  } catch (error) {
+    return res.status(500).json({ error: true, message: error.message });
+  }
+});
 
-// insert status
-routerServiceRequestStatus.post("/" , async (req, res)=>{
-  const data = await insertStatus(req.body)
-  res.send(data)
-})
+// 3. INSERT
+router.post("/", async (req, res) => {
+  try {
+    const result = await insert(req.body);
+    if (result.error) {
+      return res.status(500).json(result);
+    }
+    return res.status(201).json(result);
+  } catch (error) {
+    return res.status(500).json({ error: true, message: error.message });
+  }
+});
 
-// update Status
-routerServiceRequestStatus.put("/:id" , async (req, res)=>{
-  const data = await upadteStatus(req.params.id , req.body)
-  res.send(data)
-})
+// 4. UPDATE
+router.put("/:id", async (req, res) => {
+  try {
+    const result = await update(req.params.id, req.body);
+    if (result.error) {
+      return res.status(500).json(result);
+    }
+    return res.status(200).json(result);
+  } catch (error) {
+    return res.status(500).json({ error: true, message: error.message });
+  }
+});
 
-// delete Status
-routerServiceRequestStatus.delete("/:id" , async (req, res)=>{
-  const data = await upadteStatus(req.params.id , req.body)
-  res.send(data)
-})
-module.exports = routerServiceRequestStatus
+// 5. DELETE
+router.delete("/:id", async (req, res) => {
+  try {
+    const result = await deleteById(req.params.id);
+    if (result.error) {
+      return res.status(500).json(result);
+    }
+    return res.status(200).json(result);
+  } catch (error) {
+    return res.status(500).json({ error: true, message: error.message });
+  }
+});
+
+module.exports = router;
