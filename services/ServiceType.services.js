@@ -2,7 +2,6 @@ const ServiceTypeModel = require("../models/ServiceType.model");
 
 async function getAll() {
   try {
-    [cite_start];
     const data = await ServiceTypeModel.find().sort({ serviceTypeName: 1 });
     return {
       error: false,
@@ -35,7 +34,9 @@ async function getById(id) {
 
 async function insert(formData) {
   try {
-    [cite_start];
+    // ERROR FIX: Yahan se wo wali line hata di hai
+    
+    // Validation: Duplicate Check
     const existingType = await ServiceTypeModel.findOne({
       serviceTypeName: {
         $regex: new RegExp("^" + formData.serviceTypeName + "$", "i"),
@@ -43,10 +44,9 @@ async function insert(formData) {
     });
 
     if (existingType) {
-      throw new Error(
-        `Service Type '${formData.serviceTypeName}' already exists!`,
-      );
+      throw new Error(`Service Type '${formData.serviceTypeName}' already exists!`);
     }
+
     const data = await ServiceTypeModel.create(formData);
     return {
       error: false,
@@ -77,7 +77,7 @@ async function update(id, formData) {
         );
       }
     }
-    const data = await ServiceTypeModel.findByIdAndUpdate(id, formData , {new :true});
+    const data = await ServiceTypeModel.findByIdAndUpdate(id, formData, { new: true });
     return {
       error: false,
       data,

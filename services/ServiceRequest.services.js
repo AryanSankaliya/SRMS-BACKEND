@@ -55,7 +55,7 @@ async function insert(formData) {
         "Master Data Error: PENDING or ASSIGNED status not found in DB (Check SystemName)"
       );
     }
-
+    // automatic mapping for staff and request 
     const mapping = await ServiceRequestTypeWisePersonModel.findOne({
       serviceRequestTypeId: formData.serviceRequestTypeId,
     });

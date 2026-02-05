@@ -2,8 +2,7 @@ const ServiceRequestStatusModel = require("../models/ServiceRequestStatus.model"
 
 async function getAll() {
   try {
-    // CHANGE 1: Sorting lagayi hai (Sequence wise)
-    // Taaki Dropdown me order sahi dikhe: Pending -> In Progress -> Closed
+    // sorting base on drowpdown orderd (for good view) order like Pending -> In Progress -> Closed
     const data = await ServiceRequestStatusModel.find().sort({ sequence: 1 });
 
     return {
@@ -37,8 +36,8 @@ async function getByID(id) {
 
 async function insert(formData) {
   try {
-    // CHANGE 2: Duplicate Validation (System Name Unique hona chahiye)
-    // Agar 'PENDING' pehle se hai, toh dusra mat banne do
+    
+    // validation for systemName (3 j set kariya che aemathi j hova joi)
     const existingStatus = await ServiceRequestStatusModel.findOne({
         serviceRequestStatusSystemName: formData.serviceRequestStatusSystemName.toUpperCase()
     });
@@ -62,19 +61,17 @@ async function insert(formData) {
   }
 }
 
-// CHANGE 3: Spelling Fix (upadte -> update)
 async function update(id, formData) {
   try {
-    // Update me bhi Duplicate check (Optional but recommended)
+    // validation for systemName (3 j set kariya che aemathi j hova joi)
     if (formData.serviceRequestStatusSystemName) {
          const existingStatus = await ServiceRequestStatusModel.findOne({
             serviceRequestStatusSystemName: formData.serviceRequestStatusSystemName.toUpperCase(),
-            _id: { $ne: id }
+            _id: { $ne: id } // potane chhodin bija badha ne check karase
         });
         if (existingStatus) throw new Error("Status System Name already taken!");
     }
 
-    // { new: true } lagaya taaki updated data wapas mile
     const data = await ServiceRequestStatusModel.findByIdAndUpdate(
       id,
       formData,
@@ -116,6 +113,6 @@ module.exports = {
   getAll,
   getByID,
   insert,
-  update, // Export name fixed
+  update, 
   deleteById,
 };

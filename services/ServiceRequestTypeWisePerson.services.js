@@ -41,14 +41,17 @@ async function getById(id) {
 
 async function insert(formData) {
   try {
+    // validation is this req type is alredy exist
     const typeExists = await ServiceRequestTypeModel.findById(
       formData.serviceRequestTypeId,
     );
     if (!typeExists) throw new Error("Invalid Service Request Type ID");
 
+    // validation for staff exist or not
     const staffExists = await StaffModel.findById(formData.staffId);
     if (!staffExists) throw new Error("Invalid Staff ID");
 
+    //validation for mapping is already exits or not 
     const existingMapping = await ServiceRequestTypeWisePersonModel.findOne({
       serviceRequestTypeId: formData.serviceRequestTypeId,
     });

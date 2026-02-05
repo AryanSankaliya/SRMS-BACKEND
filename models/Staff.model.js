@@ -10,12 +10,12 @@ const StaffSchema = new mongoose.Schema(
     email: {
       type: String,
       required: true,
-      unique: true, // Email duplicate nahi honi chahiye
+      unique: true, // email will be not duplicated
       lowercase: true,
       trim: true,
     },
     password: {
-      type: String, // Login ke liye
+      type: String, 
       required: true,
     },
     mobile: {
