@@ -1,9 +1,9 @@
 const StaffModel = require("../models/Staff.model");
+const jwt = require("jsonwebtoken");
 
 // 1. GET ALL STAFF
 async function getAll() {
   try {
-    // Password field ko hata diya (-password) taaki security bani rahe
     const data = await StaffModel.find().select("-password").sort({ name: 1 });
 
     return {
@@ -30,24 +30,23 @@ async function getById(id) {
 async function insert(formData) {
   try {
     // Validation: Duplicate Email Check
-    const existingStaff = await StaffModel.findOne({ 
-        email: formData.email.toLowerCase() 
+    const existingStaff = await StaffModel.findOne({
+      email: formData.email.toLowerCase(),
     });
-    
+
     if (existingStaff) {
       throw new Error("Email already exists! Please use a different email.");
     }
 
-    // Note: Production me password hash karna chahiye (bcrypt use karke),
-    // lekin abhi simple rakh rahe hain.
+    
     const data = await StaffModel.create({
-        ...formData,
-        email: formData.email.toLowerCase()
+      ...formData,
+      email: formData.email.toLowerCase(),
     });
 
     return {
       error: false,
-      data, // Return data me password dikhega, chahe to hata dena response se
+      data,
       message: "New Staff Member Added",
     };
   } catch (error) {
@@ -58,18 +57,20 @@ async function insert(formData) {
 // 4. UPDATE STAFF
 async function update(id, formData) {
   try {
-    // Agar Email update ho raha hai, to check karo kisi aur ka to nahi hai
     if (formData.email) {
       const existingStaff = await StaffModel.findOne({
         email: formData.email.toLowerCase(),
-        _id: { $ne: id } // Khud ko chhod kar check karo
+        _id: { $ne: id }, 
       });
 
-      if (existingStaff) throw new Error("Email already registered by another staff member.");
+      if (existingStaff)
+        throw new Error("Email already registered by another staff member.");
     }
 
-    const data = await StaffModel.findByIdAndUpdate(id, formData, { new: true }).select("-password");
-    
+    const data = await StaffModel.findByIdAndUpdate(id, formData, {
+      new: true,
+    }).select("-password");
+
     return { error: false, data, message: "Staff Profile Updated" };
   } catch (error) {
     return { error: true, message: error.message };
@@ -79,8 +80,7 @@ async function update(id, formData) {
 // 5. DELETE STAFF
 async function deleteById(id) {
   try {
-    // Future me check lagana padega ki agar Staff kisi active ticket pe kaam kar raha hai
-    // to delete na ho.
+  
     const data = await StaffModel.findByIdAndDelete(id);
     return { error: false, data, message: "Staff Member Deleted" };
   } catch (error) {
@@ -88,24 +88,34 @@ async function deleteById(id) {
   }
 }
 
-// 6. LOGIN (Bonus Function: Frontend ke liye kaam aayega)
 async function login(email, password) {
-    try {
-        const staff = await StaffModel.findOne({ email: email.toLowerCase() });
-        if (!staff) throw new Error("User not found");
+  try {
+    const user = await StaffModel.findOne({ email: email.toLowerCase() });
+    if (!user) throw new Error("User not found");
 
-        // Simple string comparison (Production me bcrypt.compare use karna)
-        if (staff.password !== password) throw new Error("Invalid Password");
+    if (user.password !== password) throw new Error("Invalid Password");
 
-        if (!staff.isActive) throw new Error("Your account is deactivated. Contact Admin.");
+    const token = jwt.sign(
+      {
+        _id: user._id,
+        email: user.email,
+        role: user.designation,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" },
+    );
 
-        // Password hata kar data bhejo
-        const { password: pass, ...staffData } = staff.toObject();
+    const userWithoutPassword = user.toObject();
+    delete userWithoutPassword.password;
 
-        return { error: false, data: staffData, message: "Login Successful" };
-    } catch (error) {
-        return { error: true, message: error.message };
-    }
+    return {
+      error: false,
+      data: { ...userWithoutPassword, token }, 
+      message: "Login Successful",
+    };
+  } catch (error) {
+    return { error: true, message: error.message };
+  }
 }
 
 module.exports = {
@@ -114,5 +124,5 @@ module.exports = {
   insert,
   update,
   deleteById,
-  login
+  login,
 };
