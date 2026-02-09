@@ -50,7 +50,7 @@ const ServiceRequestSchema = new mongoose.Schema(
     serviceRequestStatusDateTime: Date,
     serviceRequestStatusByUserId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User"
+      ref: "Staff"
     },
 
     serviceRequestStatusDescription: {
@@ -66,7 +66,7 @@ const ServiceRequestSchema = new mongoose.Schema(
     approvalStatusDateTime: Date,
     approvalStatusByUserId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User"
+      ref: "Staff"
     },
 
     approvalStatusDescription: {
@@ -76,13 +76,13 @@ const ServiceRequestSchema = new mongoose.Schema(
 
     assignedToUserId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User"
+      ref: "Staff"
     },
 
     assignedDateTime: Date,
     assignedByUserId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User"
+      ref: "Staff"
     },
 
     assignedDescription: {
@@ -107,7 +107,7 @@ const ServiceRequestSchema = new mongoose.Schema(
 
     createdByUserId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "Staff",
       required: true
     }
   },

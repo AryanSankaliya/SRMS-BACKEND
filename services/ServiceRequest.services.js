@@ -5,9 +5,10 @@ const ServiceRequestTypeWisePersonModel = require("../models/ServiceRequestTypeW
 async function getAll(filter = {}) {
   try {
     const data = await ServiceRequestModel.find(filter)
+      .populate("serviceRequestTypeId")
       .populate("serviceRequestStatusId")
-      .populate("assignedToUserId", "name") 
-      .sort({ createdAt: -1 }); 
+      .populate("assignedToUserId", "name")
+      .sort({ createdAt: -1 });
 
     return {
       error: false,
@@ -27,7 +28,7 @@ async function getById(id) {
     const data = await ServiceRequestModel.findById(id)
       .populate("serviceRequestStatusId")
       .populate("assignedToUserId");
-      
+
     return {
       error: false,
       data,
@@ -52,17 +53,17 @@ async function insert(formData) {
 
     if (!statusPending || !statusAssigned) {
       throw new Error(
-        "Master Data Error: PENDING or ASSIGNED status not found in DB (Check SystemName)"
+        "Master Data Error: PENDING or ASSIGNED status not found in DB (Check SystemName)",
       );
     }
-    // automatic mapping for staff and request 
+    // automatic mapping for staff and request
     const mapping = await ServiceRequestTypeWisePersonModel.findOne({
       serviceRequestTypeId: formData.serviceRequestTypeId,
     });
 
     let finalStatusId = statusPending._id;
     let assignedUserId = null;
-    let statusDesc = "Request created, waiting for HOD approval"; 
+    let statusDesc = "Request created, waiting for HOD approval";
 
     if (mapping && mapping.staffId) {
       finalStatusId = statusAssigned._id;
@@ -98,7 +99,9 @@ async function insert(formData) {
 
 async function update(id, formData) {
   try {
-    const data = await ServiceRequestModel.findByIdAndUpdate(id, formData, { new: true });
+    const data = await ServiceRequestModel.findByIdAndUpdate(id, formData, {
+      new: true,
+    });
     return {
       error: false,
       data,
