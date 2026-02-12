@@ -1,28 +1,28 @@
-const StudentModel = require("../models/Student.model");
+const UserModel = require("../models/User.model");
 const jwt = require("jsonwebtoken");
 
-// 1. REGISTER STUDENT
+// 1. REGISTER USER
 async function register(formData) {
     try {
         // Validation: Duplicate Email Check
-        const existingStudentEmail = await StudentModel.findOne({
+        const existingUserEmail = await UserModel.findOne({
             email: formData.email.toLowerCase(),
         });
 
-        if (existingStudentEmail) {
+        if (existingUserEmail) {
             throw new Error("Email already registered! Please login.");
         }
 
         // Validation: Duplicate Enrollment No Check
-        const existingStudentEnrollment = await StudentModel.findOne({
+        const existingUserEnrollment = await UserModel.findOne({
             enrollmentNo: formData.enrollmentNo,
         });
 
-        if (existingStudentEnrollment) {
+        if (existingUserEnrollment) {
             throw new Error("Enrollment Number already registered!");
         }
 
-        const data = await StudentModel.create({
+        const data = await UserModel.create({
             ...formData,
             email: formData.email.toLowerCase(),
         });
@@ -30,39 +30,39 @@ async function register(formData) {
         return {
             error: false,
             data,
-            message: "Student Registration Successful",
+            message: "User Registration Successful",
         };
     } catch (error) {
         return { error: true, message: error.message };
     }
 }
 
-// 2. LOGIN STUDENT
+// 2. LOGIN USER
 async function login(email, password) {
     try {
-        const student = await StudentModel.findOne({ email: email.toLowerCase() });
-        if (!student) throw new Error("Student not found");
+        const user = await UserModel.findOne({ email: email.toLowerCase() });
+        if (!user) throw new Error("User not found");
 
-        if (student.password !== password) throw new Error("Invalid Password");
+        if (user.password !== password) throw new Error("Invalid Password");
 
-        if (!student.isActive) throw new Error("Account is inactive. Please contact admin.");
+        if (!user.isActive) throw new Error("Account is inactive. Please contact admin.");
 
         const token = jwt.sign(
             {
-                _id: student._id,
-                email: student.email,
-                role: "Student",
+                _id: user._id,
+                email: user.email,
+                role: "User",
             },
             process.env.JWT_SECRET,
             { expiresIn: "1d" }
         );
 
-        const studentWithoutPassword = student.toObject();
-        delete studentWithoutPassword.password;
+        const userWithoutPassword = user.toObject();
+        delete userWithoutPassword.password;
 
         return {
             error: false,
-            data: { ...studentWithoutPassword, token },
+            data: { ...userWithoutPassword, token },
             message: "Login Successful",
         };
     } catch (error) {
@@ -70,21 +70,21 @@ async function login(email, password) {
     }
 }
 
-// 3. GET ALL STUDENTS (Optional/For Admin)
+// 3. GET ALL USERS (Optional/For Admin)
 async function getAll() {
     try {
-        const data = await StudentModel.find().select("-password").sort({ firstName: 1 });
-        return { error: false, data, message: "Get all students" };
+        const data = await UserModel.find().select("-password").sort({ firstName: 1 });
+        return { error: false, data, message: "Get all users" };
     } catch (error) {
         return { error: true, message: error.message };
     }
 }
 
-// 4. GET STUDENT BY ID
+// 4. GET USER BY ID
 async function getById(id) {
     try {
-        const data = await StudentModel.findById(id).select("-password");
-        return { error: false, data, message: "Get student profile" };
+        const data = await UserModel.findById(id).select("-password");
+        return { error: false, data, message: "Get user profile" };
     } catch (error) {
         return { error: true, message: error.message };
     }

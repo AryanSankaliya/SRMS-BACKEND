@@ -100,14 +100,14 @@ const ServiceRequestSchema = new mongoose.Schema(
       ref: "Staff"
     },
 
-    studentId: {
+    userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Student"
+      ref: "User"
     },
 
     createdByUserId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Staff",
+      ref: "User",
       required: true
     }
   },

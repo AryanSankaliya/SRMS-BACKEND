@@ -1,11 +1,11 @@
-const express = require("express");
+const express = require("express") 
 const router = express.Router();
 const {
     register,
     login,
     getAll,
     getById
-} = require("../services/student.service");
+} = require("../services/user.service");
 
 // 1. REGISTER
 router.post("/register", async (req, res) => {

@@ -12,7 +12,7 @@ const routerServiceRequestTypeWisePerson = require("./routes/ServiceRequestTypeW
 const routerServiceType = require("./routes/ServiceType.route");
 const roterServiceDept = require("./routes/ServiceDept.route");
 const routerStaff = require("./routes/staff.route");
-const routerStudent = require("./routes/student.route");
+const routerUser = require("./routes/user.route");
 
 const app = express();
 
@@ -30,7 +30,7 @@ app.use("/typeWisePerson", routerServiceRequestTypeWisePerson);
 app.use("/type", routerServiceType);
 app.use("/dept", roterServiceDept)
 app.use("/staff", routerStaff);
-app.use("/student", routerStudent);
+app.use("/user", routerUser);
 
 
 app.listen(process.env.PORT, () => {

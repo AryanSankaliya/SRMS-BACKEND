@@ -30,7 +30,7 @@ const ServiceTypeSchema = new mongoose.Schema(
       default: false
     },
 
-    isForStudent: {
+    isForUser: {
       type: Boolean,
       default: false
     },

@@ -7,6 +7,7 @@ async function getAll(filter = {}) {
     const data = await ServiceRequestModel.find(filter)
       .populate("serviceRequestTypeId")
       .populate("serviceRequestStatusId")
+      .populate("createdByUserId", "firstName lastName email")
       .populate("assignedToUserId", "name")
       .sort({ createdAt: -1 });
 
@@ -26,8 +27,10 @@ async function getAll(filter = {}) {
 async function getById(id) {
   try {
     const data = await ServiceRequestModel.findById(id)
+      .populate("serviceRequestTypeId")
       .populate("serviceRequestStatusId")
-      .populate("assignedToUserId");
+      .populate("createdByUserId", "firstName lastName email")
+      .populate("assignedToUserId", "name email");
 
     return {
       error: false,
