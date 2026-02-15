@@ -1,4 +1,4 @@
-const express = require("express") 
+const express = require("express")
 const router = express.Router();
 const {
     register,
@@ -23,13 +23,17 @@ router.post("/register", async (req, res) => {
 // 2. LOGIN
 router.post("/login", async (req, res) => {
     try {
+        console.log("Login Route Hit");
+        console.log("Req Body:", req.body);
+        console.log("Login Function Type:", typeof login);
+
         const { email, password } = req.body;
         if (!email || !password) {
             return res.status(400).json({ error: true, message: "Email and Password are required" });
         }
         const result = await login(email, password);
         if (result.error) {
-            return res.status(401).json(result); // Using 401 for unauthorized
+            return res.status(401).json(result);
         }
         return res.status(200).json(result);
     } catch (error) {

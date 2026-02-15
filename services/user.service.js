@@ -40,7 +40,10 @@ async function register(formData) {
 // 2. LOGIN USER
 async function login(email, password) {
     try {
+        console.log("Login Attempt Email:", email);
+        console.log("Looking for:", email.toLowerCase());
         const user = await UserModel.findOne({ email: email.toLowerCase() });
+        console.log("User Found:", user ? user.email : "NULL");
         if (!user) throw new Error("User not found");
 
         if (user.password !== password) throw new Error("Invalid Password");
@@ -51,7 +54,7 @@ async function login(email, password) {
             {
                 _id: user._id,
                 email: user.email,
-                role: "User",
+                role: user.role,
             },
             process.env.JWT_SECRET,
             { expiresIn: "1d" }

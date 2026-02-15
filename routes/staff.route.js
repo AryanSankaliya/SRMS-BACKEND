@@ -84,8 +84,7 @@ router.post("/login", async (req, res) => {
         }
         const result = await login(email, password);
         if (result.error) {
-            // Can be 401, but keeping 500/custom logic simple as per instructions or consistent with other routes
-            return res.status(500).json(result);
+            return res.status(401).json(result);
         }
         return res.status(200).json(result);
     } catch (error) {
